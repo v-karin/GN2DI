@@ -116,11 +116,12 @@ If you find this work useful in your research, please cite our paper:
 
 ```bibtex
 @inproceedings{eskandari2024gn2di,
-    title={GN2DI: A Scalable Graph Neural Network Framework for Spatial Missing Data Imputation in Sensor Networks},
-    author={Eskandari, Amir and Jamshidiha, Saeed and Pourahmadi, Vahid},
-    booktitle={2024 IEEE International Conference on Future Machine Learning and Data Science (FMLDS)},
-    year={2024},
-    organization={IEEE}
+  title={GN2DI: A Scalable Graph Neural Network Framework for Spatial Missing Data Imputation in Sensor Networks},
+  author={Eskandari, Amir and Jamshidiha, Saeed and Pourahmadi, Vahid},
+  booktitle={2024 IEEE International Conference on Future Machine Learning and Data Science (FMLDS)},
+  pages={191--196},
+  year={2024},
+  organization={IEEE}
 }
 ```
 
