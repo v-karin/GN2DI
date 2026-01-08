@@ -60,7 +60,7 @@ class GraphLearner(nn.Module):
                     in_channels=in_channel,
                     out_channels=hidden_dim_conv,
                     aggr='mean'
-                )
+                ).to(device="cuda")
             )
             
             self.read_out.append(
@@ -68,7 +68,7 @@ class GraphLearner(nn.Module):
                     nn.Linear(hidden_dim_conv, hidden_dim_readout),
                     nn.Dropout(p=dropout_gl),
                     nn.ReLU()
-                )
+                ).to(device="cuda")
             )
 
             self.weight_updater.append(
@@ -78,7 +78,7 @@ class GraphLearner(nn.Module):
                     nn.ReLU(),
                     nn.Linear(hidden_dim_updater, 1),
                     nn.Sigmoid()
-                )
+                ).to(device="cuda")
             )
     
     def update_edge_weight(self, x, edge_attr, edge_index, mlp):
@@ -136,7 +136,7 @@ class Imputation(nn.Module):
     def forward(self, dynamic_node_features, edge_index, edge_weight):
         h = dynamic_node_features
         for cnv, read_out in zip(self.conv, self.read_out):
-            h = F.relu(F.dropout(cnv(h, edge_index, edge_weight)))        
+            h = F.relu(F.dropout(cnv(h[:, 0, :], edge_index, edge_weight)[:, None, :]))        
             h = read_out(h)
     
         x_hat = self.prd(h)
