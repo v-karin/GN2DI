@@ -1,14 +1,15 @@
+import time
 import torch
 from torch import nn
 from torch.optim import Adam
 from torch.utils.data import DataLoader
 import numpy as np
 from tqdm import tqdm
-import wandb
+import trackio as wandb
 
 from config import get_args
 from data.dataset import get_dataset, DataSet
-from models.gn2di import GN2DI
+from model.gn2di import GN2DI
 from utils.graph import construct_graph
 
 def train(args):
@@ -63,7 +64,8 @@ def train(args):
     criterion = nn.MSELoss()
     optimizer = Adam(model.parameters(), lr=args.lr)
     rng = np.random.RandomState(seed=args.seed)
-    
+    ot = time.time()    
+
     # Training loop
     for epoch in tqdm(range(args.max_epoch), desc="Training..."):
         # Construct graph
@@ -103,7 +105,8 @@ def train(args):
                 data
             )
             x_dynamic = x_dynamic.unsqueeze(dim=1).repeat(1, 1, args.in_channel_imp)
-            
+
+            print(x_static.device, x_dynamic.device, edge_index.device, edge_weight.device)
             x_rec = model(x_static, x_dynamic, edge_index, edge_weight)
             loss = criterion(x_dynamic[mask == False], x_rec[mask == False])
             
@@ -131,14 +134,16 @@ def train(args):
         # Log metrics
         train_loss = sum(train_losses) / len(train_losses)
         val_loss = sum(val_losses) / len(val_losses)
-        
+        nt = time.time() - ot
+
         wandb.log({
             "epoch": epoch,
             "train_loss": train_loss,
-            "val_loss": val_loss
+            "val_loss": val_loss,
+            "time": nt,
         })
         
-        print(f"Epoch {epoch}: Train MSE = {train_loss:.4f}, Val MSE = {val_loss:.4f}")
+        print(f"Epoch {epoch}: Train MSE = {train_loss:.4f}, Val MSE = {val_loss:.4f}, Time Elapsed = {nt:.6f}")
 
 if __name__ == "__main__":
     args = get_args()
