@@ -120,7 +120,7 @@ class Imputation(nn.Module):
                     in_channels=in_channel,
                     out_channels=hidden_dim_conv,
                     aggr='mean'
-                )
+                ).to(device="cuda")
             )
             
             self.read_out.append(
@@ -128,7 +128,7 @@ class Imputation(nn.Module):
                     nn.Linear(hidden_dim_conv, hidden_dim_readout),
                     nn.Dropout(p=dropout_imp),
                     nn.ReLU(),
-                )
+                ).to(device="cuda")
             )
 
         self.prd = nn.Linear(hidden_dim_readout, 1)
